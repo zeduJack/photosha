@@ -28,6 +28,9 @@
 .idea/
 .vscode/
 
+# Claude Code (local/personal settings)
+.claude/settings.local.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
