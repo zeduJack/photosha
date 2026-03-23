@@ -37,6 +37,14 @@
       "other": "Anderes"
     }
   },
+  "pricing": {
+    "from": "Ab CHF {price}"
+  },
+  "footer": {
+    "copyright": "© {year} Sha",
+    "impressum": "Impressum",
+    "privacy": "Datenschutz"
+  },
   "about": {
     "title": "Über mich"
   },
