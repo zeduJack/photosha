@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>photosha — Design Direction Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ─── Reset & Base ───────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:          #FAF8F5;
+    --surface:     #F2EFE9;
+    --border:      #E8E3DC;
+    --text:        #1A1814;
+    --text-2:      #6B6560;
+    --text-3:      #A09890;
+    --accent:      #C4A882;
+    --accent-h:    #B39470;
+    --accent-2:    #8C7B6B;
+    --overlay:     rgba(26,24,20,0.95);
+    --overlay-ui:  rgba(26,24,20,0.60);
+    --serif:       'Cormorant Garamond', Georgia, serif;
+    --sans:        'Inter', system-ui, sans-serif;
+  }
+
+  html { font-size: 16px; background: #111; color: var(--text); scroll-behavior: smooth; }
+  body { font-family: var(--sans); }
+
+  /* ─── Selector UI ────────────────────────────────────────────── */
+  .selector {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: #111; padding: 16px 32px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    border-bottom: 1px solid #333;
+  }
+  .selector-label { font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; color: #666; text-transform: uppercase; margin-right: 8px; }
+  .btn {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 6px 14px; border: 1px solid #444; background: transparent;
+    color: #999; cursor: pointer; transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ─── Direction Panels ───────────────────────────────────────── */
+  .direction { display: none; min-height: 100vh; padding-top: 57px; }
+  .direction.visible { display: block; }
+
+  /* ─── Shared Components ──────────────────────────────────────── */
+  .mock-img {
+    background: linear-gradient(135deg, #d4c9bc 0%, #b8a99a 40%, #c9b8a8 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(26,24,20,0.25); font-family: var(--sans); font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .mock-img.dark {
+    background: linear-gradient(135deg, #4a4035 0%, #2e261e 40%, #3d3228 100%);
+    color: rgba(250,248,245,0.2);
+  }
+  .mock-img.mid {
+    background: linear-gradient(135deg, #8c7c6c 0%, #6b5c4e 40%, #7d6d5e 100%);
+    color: rgba(250,248,245,0.25);
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     DIRECTION A — Full-Bleed Gallery Home
+     Hero: single full-viewport image, name overlaid at bottom
+     Gallery index: full-width vertical stack below
+  ════════════════════════════════════════════════════════════════ */
+  #dir-a { background: var(--bg); }
+
+  #dir-a .nav-a {
+    position: fixed; top: 57px; left: 0; right: 0; z-index: 100;
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    mix-blend-mode: normal;
+  }
+  #dir-a .nav-a .logo {
+    font-family: var(--serif); font-size: 18px; font-weight: 400; letter-spacing: 0.12em;
+    color: #fff; text-transform: lowercase;
+  }
+  #dir-a .nav-a .links {
+    display: flex; gap: 32px;
+  }
+  #dir-a .nav-a .links a {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.75); text-decoration: none;
+    transition: color 0.2s;
+  }
+  #dir-a .nav-a .links a:hover { color: #fff; }
+  #dir-a .nav-a .lang {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; color: rgba(255,255,255,0.5);
+  }
+
+  #dir-a .hero-a {
+    width: 100%; height: calc(100vh - 57px);
+    position: relative;
+  }
+  #dir-a .hero-a .mock-img {
+    width: 100%; height: 100%;
+  }
+  #dir-a .hero-a .overlay-text {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 80px 40px 48px;
+    background: linear-gradient(to top, rgba(26,24,20,0.7) 0%, transparent 100%);
+  }
+  #dir-a .hero-a .overlay-text h1 {
+    font-family: var(--serif); font-size: clamp(56px, 8vw, 96px);
+    font-weight: 300; color: #fff; line-height: 1.0;
+    letter-spacing: -0.01em;
+  }
+  #dir-a .hero-a .overlay-text p {
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.65); margin-top: 12px;
+  }
+  #dir-a .hero-a .scroll-hint {
+    position: absolute; bottom: 48px; right: 40px;
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.4); text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  #dir-a .hero-a .scroll-hint::before {
+    content: ''; width: 40px; height: 1px; background: rgba(255,255,255,0.3);
+  }
+
+  #dir-a .gallery-a {
+    padding: 80px 40px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  }
+  #dir-a .gallery-a .cat-card { position: relative; cursor: pointer; overflow: hidden; }
+  #dir-a .gallery-a .cat-card .mock-img { width: 100%; aspect-ratio: 4/3; transition: transform 0.4s ease; }
+  #dir-a .gallery-a .cat-card:hover .mock-img { transform: scale(1.03); }
+  #dir-a .gallery-a .cat-card .cat-label {
+    position: absolute; bottom: 20px; left: 24px;
+    font-family: var(--serif); font-size: 28px; font-weight: 400;
+    color: #fff; letter-spacing: 0.02em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  #dir-a .gallery-a .cat-card .cat-sub {
+    position: absolute; bottom: 24px; right: 24px;
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.55); text-transform: uppercase;
+  }
+  #dir-a .gallery-a .cat-card.wide { grid-column: span 2; }
+  #dir-a .gallery-a .cat-card.wide .mock-img { aspect-ratio: 21/8; }
+
+  #dir-a .dir-label {
+    background: #111; color: #666; padding: 16px 40px;
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     DIRECTION B — Editorial Split Home
+     Left: large Cormorant type; Right: single hero image
+  ════════════════════════════════════════════════════════════════ */
+  #dir-b { background: var(--bg); }
+
+  #dir-b .nav-b {
+    padding: 28px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  #dir-b .nav-b .logo {
+    font-family: var(--serif); font-size: 20px; font-weight: 400;
+    letter-spacing: 0.14em; color: var(--text); text-transform: lowercase;
+  }
+  #dir-b .nav-b .links {
+    display: flex; gap: 36px;
+  }
+  #dir-b .nav-b .links a {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-2); text-decoration: none;
+  }
+  #dir-b .nav-b .links a:hover { color: var(--text); }
+
+  #dir-b .hero-b {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 57px - 77px);
+  }
+  #dir-b .hero-b .left {
+    padding: 80px 64px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    border-right: 1px solid var(--border);
+  }
+  #dir-b .hero-b .left .intro {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+    margin-bottom: 40px;
+  }
+  #dir-b .hero-b .left h1 {
+    font-family: var(--serif); font-size: clamp(56px, 5vw, 80px);
+    font-weight: 300; line-height: 1.05; letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  #dir-b .hero-b .left h1 em {
+    font-style: italic; color: var(--accent-2);
+  }
+  #dir-b .hero-b .left .cats {
+    margin-top: 56px;
+    display: flex; flex-direction: column; gap: 0;
+    border-top: 1px solid var(--border);
+  }
+  #dir-b .hero-b .left .cats a {
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2);
+    text-decoration: none; padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    transition: color 0.15s;
+  }
+  #dir-b .hero-b .left .cats a:hover { color: var(--text); }
+  #dir-b .hero-b .left .cats a span { color: var(--text-3); font-size: 11px; }
+
+  #dir-b .hero-b .left .cta-area {
+    margin-top: 56px;
+  }
+  #dir-b .hero-b .left .cta-area .price {
+    font-family: var(--sans); font-size: 12px; color: var(--text-2);
+    letter-spacing: 0.04em; margin-bottom: 20px;
+  }
+  #dir-b .hero-b .left .cta-area .btn-cta {
+    display: inline-block;
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 14px 32px; background: var(--text); color: var(--bg);
+    border: none; cursor: pointer;
+  }
+
+  #dir-b .hero-b .right .mock-img {
+    width: 100%; height: 100%; min-height: 500px;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     DIRECTION C — Masthead + Immediate Gallery
+  ════════════════════════════════════════════════════════════════ */
+  #dir-c { background: var(--bg); }
+
+  #dir-c .nav-c {
+    padding: 32px 48px 0;
+  }
+  #dir-c .nav-c .top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 24px; border-bottom: 1px solid var(--border);
+  }
+  #dir-c .nav-c .logo {
+    font-family: var(--serif); font-size: 36px; font-weight: 300;
+    letter-spacing: 0.08em; color: var(--text); text-transform: lowercase;
+    line-height: 1;
+  }
+  #dir-c .nav-c .tagline {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-3);
+  }
+  #dir-c .nav-c .cats-row {
+    display: flex; gap: 0; margin-top: 0;
+  }
+  #dir-c .nav-c .cats-row a {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2);
+    text-decoration: none; padding: 18px 24px 18px 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  #dir-c .nav-c .cats-row a:first-child { padding-left: 0; }
+  #dir-c .nav-c .cats-row a:hover, #dir-c .nav-c .cats-row a.active {
+    color: var(--text); border-bottom-color: var(--text);
+  }
+
+  #dir-c .gallery-c {
+    padding: 48px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  #dir-c .gallery-c .row {
+    display: grid; gap: 24px;
+  }
+  #dir-c .gallery-c .row-1 { grid-template-columns: 1fr; }
+  #dir-c .gallery-c .row-3 { grid-template-columns: 2fr 1fr 1fr; }
+  #dir-c .gallery-c .row-2 { grid-template-columns: 1fr 1.5fr; }
+
+  #dir-c .gallery-c .mock-img.tall { aspect-ratio: 4/5; }
+  #dir-c .gallery-c .mock-img.wide { aspect-ratio: 21/9; }
+  #dir-c .gallery-c .mock-img.sq { aspect-ratio: 1/1; }
+  #dir-c .gallery-c .mock-img.port { aspect-ratio: 3/4; }
+
+  #dir-c .contact-strip {
+    margin: 24px 48px 80px;
+    padding: 48px; background: var(--surface);
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+  }
+  #dir-c .contact-strip .left h2 {
+    font-family: var(--serif); font-size: 40px; font-weight: 300; color: var(--text);
+  }
+  #dir-c .contact-strip .left p {
+    font-family: var(--sans); font-size: 13px; color: var(--text-2);
+    margin-top: 8px; letter-spacing: 0.02em;
+  }
+  #dir-c .contact-strip .btn-cta {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 16px 40px; background: var(--text); color: var(--bg);
+    border: none; cursor: pointer; white-space: nowrap;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     DIRECTION D — Staggered Editorial
+  ════════════════════════════════════════════════════════════════ */
+  #dir-d { background: var(--bg); }
+
+  #dir-d .nav-d {
+    padding: 24px 48px;
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  #dir-d .nav-d .links-l, #dir-d .nav-d .links-r {
+    display: flex; gap: 32px;
+  }
+  #dir-d .nav-d .links-r { justify-content: flex-end; align-items: center; }
+  #dir-d .nav-d .links-l a, #dir-d .nav-d .links-r a {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2);
+    text-decoration: none;
+  }
+  #dir-d .nav-d .links-l a:hover, #dir-d .nav-d .links-r a:hover { color: var(--text); }
+  #dir-d .nav-d .logo {
+    font-family: var(--serif); font-size: 22px; font-weight: 400;
+    letter-spacing: 0.14em; color: var(--text); text-transform: lowercase;
+    text-align: center;
+  }
+  #dir-d .nav-d .lang {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em;
+    color: var(--text-3);
+  }
+
+  #dir-d .stagger {
+    padding: 80px 48px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  #dir-d .stagger .block {
+    display: grid; align-items: stretch;
+    border-top: 1px solid var(--border); padding: 64px 0;
+  }
+  #dir-d .stagger .block-img-right { grid-template-columns: 1fr 1.4fr; gap: 80px; }
+  #dir-d .stagger .block-img-left { grid-template-columns: 1.4fr 1fr; gap: 80px; }
+
+  #dir-d .stagger .text-col {
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  #dir-d .stagger .text-col .num {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-3); margin-bottom: 24px;
+  }
+  #dir-d .stagger .text-col h2 {
+    font-family: var(--serif); font-size: clamp(40px, 4vw, 56px);
+    font-weight: 300; color: var(--text); line-height: 1.1;
+  }
+  #dir-d .stagger .text-col h2 em { font-style: italic; }
+  #dir-d .stagger .text-col p {
+    font-family: var(--sans); font-size: 14px; color: var(--text-2);
+    line-height: 1.7; margin-top: 24px; max-width: 400px;
+  }
+  #dir-d .stagger .text-col .price {
+    font-family: var(--sans); font-size: 12px; color: var(--accent-2);
+    margin-top: 32px; letter-spacing: 0.04em;
+  }
+  #dir-d .stagger .text-col .link {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text);
+    text-decoration: none; margin-top: 32px; display: inline-block;
+    border-bottom: 1px solid var(--text); padding-bottom: 4px;
+  }
+  #dir-d .stagger .img-col .mock-img { width: 100%; height: 100%; min-height: 360px; }
+
+  /* ════════════════════════════════════════════════════════════════
+     DIRECTION E — Minimal Typographic (text-only index)
+  ════════════════════════════════════════════════════════════════ */
+  #dir-e { background: var(--bg); }
+
+  #dir-e .nav-e {
+    padding: 32px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #dir-e .nav-e .logo {
+    font-family: var(--serif); font-size: 18px; font-weight: 400;
+    letter-spacing: 0.16em; color: var(--text); text-transform: lowercase;
+  }
+  #dir-e .nav-e .right {
+    display: flex; gap: 40px; align-items: center;
+  }
+  #dir-e .nav-e .right a {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2);
+    text-decoration: none;
+  }
+
+  #dir-e .hero-e {
+    padding: 80px 48px 0;
+    border-top: 1px solid var(--border);
+  }
+  #dir-e .hero-e .eyebrow {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+    margin-bottom: 32px;
+  }
+  #dir-e .hero-e h1 {
+    font-family: var(--serif); font-size: clamp(72px, 9vw, 120px);
+    font-weight: 300; line-height: 0.95; letter-spacing: -0.02em; color: var(--text);
+    max-width: 900px;
+  }
+  #dir-e .hero-e h1 em {
+    font-style: italic; color: var(--accent-2);
+  }
+  #dir-e .hero-e .sub {
+    font-family: var(--sans); font-size: 13px; color: var(--text-2);
+    margin-top: 40px; line-height: 1.6; max-width: 480px;
+    letter-spacing: 0.01em;
+  }
+
+  #dir-e .index-e {
+    margin-top: 80px; border-top: 1px solid var(--border);
+  }
+  #dir-e .index-e .row {
+    display: grid; grid-template-columns: 80px 1fr 200px 200px;
+    align-items: center; padding: 24px 48px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background 0.15s;
+    gap: 24px;
+  }
+  #dir-e .index-e .row:hover { background: var(--surface); }
+  #dir-e .index-e .row .num {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.06em;
+    color: var(--text-3);
+  }
+  #dir-e .index-e .row .title {
+    font-family: var(--serif); font-size: 32px; font-weight: 400; color: var(--text);
+    line-height: 1;
+  }
+  #dir-e .index-e .row .count {
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-3); text-align: right;
+  }
+  #dir-e .index-e .row .price {
+    font-family: var(--sans); font-size: 12px; color: var(--accent-2);
+    text-align: right; letter-spacing: 0.02em;
+  }
+  #dir-e .index-e .row .thumb {
+    display: none;
+  }
+  #dir-e .index-e .row:hover .title { color: var(--accent-2); }
+
+  #dir-e .cta-e {
+    padding: 80px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+  }
+  #dir-e .cta-e h3 {
+    font-family: var(--serif); font-size: 48px; font-weight: 300; color: var(--text);
+  }
+  #dir-e .cta-e .btn-cta {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 16px 40px; background: var(--text); color: var(--bg);
+    border: none; cursor: pointer;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     DIRECTION F — Cinematic Single Column
+  ════════════════════════════════════════════════════════════════ */
+  #dir-f { background: var(--bg); }
+
+  #dir-f .nav-f {
+    padding: 28px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #dir-f .nav-f .logo {
+    font-family: var(--serif); font-size: 20px; font-weight: 400;
+    letter-spacing: 0.14em; color: var(--text); text-transform: lowercase;
+  }
+  #dir-f .nav-f .right {
+    display: flex; gap: 40px; align-items: center;
+  }
+  #dir-f .nav-f .right a {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2);
+    text-decoration: none;
+  }
+
+  #dir-f .hero-f {
+    width: 100%; height: 75vh;
+    position: relative;
+  }
+  #dir-f .hero-f .mock-img { width: 100%; height: 100%; }
+  #dir-f .hero-f .caption {
+    position: absolute; bottom: 32px; left: 48px;
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.5);
+  }
+
+  #dir-f .intro-f {
+    padding: 64px 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    border-bottom: 1px solid var(--border);
+  }
+  #dir-f .intro-f h2 {
+    font-family: var(--serif); font-size: clamp(40px, 4vw, 56px);
+    font-weight: 300; color: var(--text); line-height: 1.1;
+  }
+  #dir-f .intro-f .right-col p {
+    font-family: var(--sans); font-size: 15px; color: var(--text-2);
+    line-height: 1.75;
+  }
+  #dir-f .intro-f .right-col .cats {
+    margin-top: 40px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  #dir-f .intro-f .right-col .cat-pill {
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2);
+    padding: 12px 16px; border: 1px solid var(--border);
+    text-align: center; cursor: pointer; transition: all 0.15s;
+  }
+  #dir-f .intro-f .right-col .cat-pill:hover {
+    background: var(--text); color: var(--bg); border-color: var(--text);
+  }
+
+  #dir-f .gallery-strip {
+    display: flex; gap: 2px; overflow: hidden;
+  }
+  #dir-f .gallery-strip .strip-img {
+    flex: 1; min-width: 0;
+  }
+  #dir-f .gallery-strip .strip-img .mock-img {
+    width: 100%; aspect-ratio: 2/3; transition: flex 0.4s ease;
+  }
+  #dir-f .gallery-strip:hover .strip-img { flex: 0.6; }
+  #dir-f .gallery-strip .strip-img:hover { flex: 2; }
+  #dir-f .gallery-strip .strip-img .mock-img:hover {}
+
+  #dir-f .cta-f {
+    padding: 80px 48px;
+    text-align: center;
+  }
+  #dir-f .cta-f h3 {
+    font-family: var(--serif); font-size: 56px; font-weight: 300;
+    color: var(--text); line-height: 1.1;
+  }
+  #dir-f .cta-f h3 em { font-style: italic; }
+  #dir-f .cta-f p {
+    font-family: var(--sans); font-size: 13px; color: var(--text-2);
+    margin-top: 16px; letter-spacing: 0.01em;
+  }
+  #dir-f .cta-f .btn-cta {
+    margin-top: 40px;
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 16px 48px; background: var(--text); color: var(--bg);
+    border: none; cursor: pointer; display: inline-block;
+  }
+
+  /* ─── Direction Labels ────────────────────────────────────────── */
+  .dir-label {
+    background: #1a1a1a; color: #666; padding: 14px 48px;
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .dir-label span { color: #444; }
+
+</style>
+</head>
+<body>
+
+<!-- ─── Selector ─────────────────────────────────────── -->
+<nav class="selector">
+  <span class="selector-label">Direction</span>
+  <button class="btn active" onclick="show('a')">A — Full-Bleed Overlay</button>
+  <button class="btn" onclick="show('b')">B — Editorial Split</button>
+  <button class="btn" onclick="show('c')">C — Masthead + Gallery</button>
+  <button class="btn" onclick="show('d')">D — Staggered Editorial</button>
+  <button class="btn" onclick="show('e')">E — Typographic Index</button>
+  <button class="btn" onclick="show('f')">F — Cinematic Column</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIRECTION A — Full-Bleed Gallery Home
+════════════════════════════════════════════════════════════════ -->
+<div id="dir-a" class="direction visible">
+  <div class="dir-label">
+    A — Full-Bleed Overlay
+    <span>Hero image fills full viewport · nav overlaid in white · categories as image cards · most visual impact on first load</span>
+  </div>
+
+  <nav class="nav-a">
+    <div class="logo">sha</div>
+    <div class="links">
+      <a href="#">Wedding</a>
+      <a href="#">Portrait</a>
+      <a href="#">Family</a>
+      <a href="#">Events</a>
+      <a href="#">Landscape</a>
+      <a href="#">About</a>
+    </div>
+    <div class="lang">DE / EN</div>
+  </nav>
+
+  <div class="hero-a">
+    <div class="mock-img dark">hero image — wedding / landscape</div>
+    <div class="overlay-text">
+      <h1>Sha</h1>
+      <p>Fotografin · Zürich</p>
+    </div>
+    <div class="scroll-hint">Explore</div>
+  </div>
+
+  <div class="gallery-a">
+    <div class="cat-card">
+      <div class="mock-img mid" style="aspect-ratio:4/3">Wedding photography</div>
+      <div class="cat-label">Wedding</div>
+      <div class="cat-sub">From CHF 3,500</div>
+    </div>
+    <div class="cat-card">
+      <div class="mock-img" style="aspect-ratio:4/3">Portrait photography</div>
+      <div class="cat-label">Portrait</div>
+      <div class="cat-sub">From CHF 350</div>
+    </div>
+    <div class="cat-card">
+      <div class="mock-img dark" style="aspect-ratio:4/3">Family photography</div>
+      <div class="cat-label">Family</div>
+      <div class="cat-sub">From CHF 500</div>
+    </div>
+    <div class="cat-card">
+      <div class="mock-img mid" style="aspect-ratio:4/3">Event photography</div>
+      <div class="cat-label">Events</div>
+      <div class="cat-sub">On request</div>
+    </div>
+    <div class="cat-card wide">
+      <div class="mock-img dark">Landscape photography · Switzerland</div>
+      <div class="cat-label">Landscape</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIRECTION B — Editorial Split
+════════════════════════════════════════════════════════════════ -->
+<div id="dir-b" class="direction">
+  <div class="dir-label">
+    B — Editorial Split
+    <span>Left column: large Cormorant type + category links · Right column: single hero image · magazine register</span>
+  </div>
+
+  <nav class="nav-b">
+    <div class="logo">sha</div>
+    <div class="links">
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </div>
+    <div style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;color:var(--text-3)">DE / EN</div>
+  </nav>
+
+  <div class="hero-b">
+    <div class="left">
+      <div>
+        <div class="intro">Fotografin · Zürich Region</div>
+        <h1>Licht.<br><em>Gefühl.</em><br>Erinnerung.</h1>
+        <div class="cats">
+          <a href="#">Wedding <span>→</span></a>
+          <a href="#">Portrait <span>→</span></a>
+          <a href="#">Family <span>→</span></a>
+          <a href="#">Events <span>→</span></a>
+          <a href="#">Landscape <span>→</span></a>
+        </div>
+      </div>
+      <div class="cta-area">
+        <div class="price">Weddings starting from CHF 3,500</div>
+        <button class="btn-cta">Book a session</button>
+      </div>
+    </div>
+    <div class="right">
+      <div class="mock-img" style="width:100%;height:100%;min-height:600px">hero image</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIRECTION C — Masthead + Immediate Gallery
+════════════════════════════════════════════════════════════════ -->
+<div id="dir-c" class="direction">
+  <div class="dir-label">
+    C — Masthead + Immediate Gallery
+    <span>Large logo masthead · category tabs below · gallery starts immediately · maximum photography on screen</span>
+  </div>
+
+  <div class="nav-c">
+    <div class="top">
+      <div class="logo">sha</div>
+      <div class="tagline">Zürich · Wedding · Portrait · Family · Events · Landscape</div>
+      <div style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;color:var(--text-3)">DE / EN</div>
+    </div>
+    <div class="cats-row">
+      <a href="#" class="active">Wedding</a>
+      <a href="#">Portrait</a>
+      <a href="#">Family</a>
+      <a href="#">Events</a>
+      <a href="#">Landscape</a>
+      <a href="#" style="margin-left:auto">About</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+
+  <div class="gallery-c">
+    <div class="row row-1">
+      <div class="mock-img dark wide" style="aspect-ratio:21/9">wedding · hero shot</div>
+    </div>
+    <div class="row row-3">
+      <div class="mock-img port">portrait</div>
+      <div class="mock-img mid sq">ceremony</div>
+      <div class="mock-img sq">detail</div>
+    </div>
+    <div class="row row-2">
+      <div class="mock-img tall">reception</div>
+      <div class="mock-img dark tall">landscape</div>
+    </div>
+  </div>
+
+  <div class="contact-strip">
+    <div class="left">
+      <h2>Let's create something<br><em style="font-family:var(--serif);font-style:italic">beautiful.</em></h2>
+      <p>Weddings from CHF 3,500 · Portraits from CHF 350</p>
+    </div>
+    <button class="btn-cta">Contact Sha</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIRECTION D — Staggered Editorial
+════════════════════════════════════════════════════════════════ -->
+<div id="dir-d" class="direction">
+  <div class="dir-label">
+    D — Staggered Editorial
+    <span>Category sections alternate image left/right · text describes each niche · pricing inline · Kinfolk/Wallpaper* register</span>
+  </div>
+
+  <nav class="nav-d">
+    <div class="links-l">
+      <a href="#">Wedding</a>
+      <a href="#">Portrait</a>
+      <a href="#">Family</a>
+    </div>
+    <div class="logo">sha</div>
+    <div class="links-r">
+      <a href="#">Events</a>
+      <a href="#">Landscape</a>
+      <a href="#">About</a>
+      <span class="lang">DE</span>
+    </div>
+  </nav>
+
+  <div class="stagger">
+    <div class="block block-img-right">
+      <div class="text-col">
+        <div class="num">01 / Wedding</div>
+        <h2>Echte Momente.<br><em>Echte Gefühle.</em></h2>
+        <p>Sha fotografiert Hochzeiten so, wie sie wirklich sind — mit Wärme, Humor und einem Auge für die kleinen Details, die den Tag unvergesslich machen.</p>
+        <div class="price">Starting from CHF 3,500</div>
+        <a href="#" class="link">View weddings</a>
+      </div>
+      <div class="img-col">
+        <div class="mock-img dark" style="width:100%;height:100%;min-height:480px">wedding · couple portrait</div>
+      </div>
+    </div>
+
+    <div class="block block-img-left">
+      <div class="img-col">
+        <div class="mock-img" style="width:100%;height:100%;min-height:420px">portrait session</div>
+      </div>
+      <div class="text-col">
+        <div class="num">02 / Portrait</div>
+        <h2>Du, wie du<br><em>wirklich bist.</em></h2>
+        <p>No stiff poses. Sha creates space for people to be themselves — the result is photographs that actually look like you.</p>
+        <div class="price">Starting from CHF 350</div>
+        <a href="#" class="link">View portraits</a>
+      </div>
+    </div>
+
+    <div class="block block-img-right">
+      <div class="text-col">
+        <div class="num">03 / Family</div>
+        <h2>Eure Geschichte.<br><em>Ungestellt.</em></h2>
+        <p>Family sessions in natural light, outdoor or at home — children running, parents laughing, chaos and calm.</p>
+        <div class="price">Starting from CHF 500</div>
+        <a href="#" class="link">View family</a>
+      </div>
+      <div class="img-col">
+        <div class="mock-img mid" style="width:100%;height:100%;min-height:420px">family outdoors</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIRECTION E — Typographic Index
+════════════════════════════════════════════════════════════════ -->
+<div id="dir-e" class="direction">
+  <div class="dir-label">
+    E — Typographic Index
+    <span>Large Cormorant headline · category list as typography (no thumbnail grid) · extremely minimal · The Row / Bottega register</span>
+  </div>
+
+  <nav class="nav-e">
+    <div class="logo">sha</div>
+    <div class="right">
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <span style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;color:var(--text-3)">DE / EN</span>
+    </div>
+  </nav>
+
+  <div class="hero-e">
+    <div class="eyebrow">Fotografin · Zürich Region · Wedding · Portrait · Family</div>
+    <h1>Photography<br>that feels <em>real.</em></h1>
+    <p class="sub">Sha captures weddings, families, portraits, and events across the Greater Zürich region — with warmth, precision, and a relaxed atmosphere on every shoot.</p>
+  </div>
+
+  <div class="index-e">
+    <div class="row">
+      <span class="num">01</span>
+      <span class="title">Wedding</span>
+      <span class="count">15 images</span>
+      <span class="price">From CHF 3,500</span>
+    </div>
+    <div class="row">
+      <span class="num">02</span>
+      <span class="title">Portrait</span>
+      <span class="count">18 images</span>
+      <span class="price">From CHF 350</span>
+    </div>
+    <div class="row">
+      <span class="num">03</span>
+      <span class="title">Family</span>
+      <span class="count">20 images</span>
+      <span class="price">From CHF 500</span>
+    </div>
+    <div class="row">
+      <span class="num">04</span>
+      <span class="title">Events</span>
+      <span class="count">16 images</span>
+      <span class="price">On request</span>
+    </div>
+    <div class="row">
+      <span class="num">05</span>
+      <span class="title">Landscape</span>
+      <span class="count">15 images</span>
+      <span class="price">&nbsp;</span>
+    </div>
+  </div>
+
+  <div class="cta-e">
+    <h3>Ready to work together?</h3>
+    <button class="btn-cta">Contact Sha</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DIRECTION F — Cinematic Single Column
+════════════════════════════════════════════════════════════════ -->
+<div id="dir-f" class="direction">
+  <div class="dir-label">
+    F — Cinematic Column
+    <span>Full-width hero image · then text intro + category grid · expanding strip gallery below · most immersive scroll experience</span>
+  </div>
+
+  <nav class="nav-f">
+    <div class="logo">sha</div>
+    <div class="right">
+      <a href="#">Wedding</a>
+      <a href="#">Portrait</a>
+      <a href="#">Family</a>
+      <a href="#">Events</a>
+      <a href="#">About</a>
+      <span style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;color:var(--text-3)">DE / EN</span>
+    </div>
+  </nav>
+
+  <div class="hero-f">
+    <div class="mock-img dark">cinematic hero — wedding · golden hour</div>
+    <div class="caption">Wedding · Zürich · 2024</div>
+  </div>
+
+  <div class="intro-f">
+    <div class="left-col">
+      <h2>Sha — Fotografin<br>in der <em>Region Zürich.</em></h2>
+    </div>
+    <div class="right-col">
+      <p>I photograph weddings, families, portraits, and events with a relaxed and natural approach. My aim is simple: images that feel exactly like the moment did.</p>
+      <div class="cats">
+        <div class="cat-pill">Wedding</div>
+        <div class="cat-pill">Portrait</div>
+        <div class="cat-pill">Family</div>
+        <div class="cat-pill">Events</div>
+        <div class="cat-pill">Landscape</div>
+        <div class="cat-pill" style="background:var(--text);color:var(--bg);border-color:var(--text)">Contact →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery-strip">
+    <div class="strip-img">
+      <div class="mock-img dark">wedding</div>
+    </div>
+    <div class="strip-img">
+      <div class="mock-img">portrait</div>
+    </div>
+    <div class="strip-img">
+      <div class="mock-img mid">family</div>
+    </div>
+    <div class="strip-img">
+      <div class="mock-img dark">events</div>
+    </div>
+    <div class="strip-img">
+      <div class="mock-img">landscape</div>
+    </div>
+  </div>
+
+  <div class="cta-f">
+    <h3>Let's make something<br><em>you'll never forget.</em></h3>
+    <p>Weddings from CHF 3,500 · Portraits from CHF 350 · Zürich and beyond</p>
+    <button class="btn-cta">Contact Sha</button>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.direction').forEach(d => d.classList.remove('visible'));
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('dir-' + id).classList.add('visible');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

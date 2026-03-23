@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 inputDocuments:
   - '_bmad-output/planning-artifacts/product-brief-photosha-2026-03-22.md'
   - '_bmad-output/planning-artifacts/research/market-photographer-portfolio-ux-design-research-2026-03-22.md'
@@ -315,3 +315,643 @@ Zero imported visual styles from any component library. Every design decision �
 - **Spacing scale**: Extended Tailwind spacing scale with larger values (24, 32, 40, 48, 64 units) to achieve the editorial white space that signals premium.
 - **No design-system shadows or elevation** — flat design only. No card shadows, no lifted components. Elevation is communicated through whitespace and scale, not CSS box-shadow.
 - **Imagery as the only decoration** — no background patterns, no gradient fills, no decorative SVG elements. Photography does the visual work.
+
+---
+
+## Defining Core Experience
+
+### Defining Experience
+
+**"Browse Sha's photography and forget you're on a website."**
+
+The defining experience of photosha is the **mobile gallery browse** — specifically the moment a visitor opens a gallery category on their phone and the touch physics feel native. Swipe between photos: momentum carries. Pinch to zoom: rubber-bands at the edges, decelerates naturally. The experience is indistinguishable from iOS Photos or Google Photos. This is not a web page; it is the photography.
+
+The equivalent desktop experience: a full-screen lightbox that fills the monitor edge-to-edge, no chrome, keyboard arrow navigation, the photograph at full resolution with room to breathe.
+
+If we nail one thing, it is this: **a gallery photo landing with its full emotional weight**, whether the visitor is on a phone in a café or comparing photographers on a shared laptop screen.
+
+### User Mental Model
+
+Visitors arrive from Google Search ("Fotografin Zürich") or Instagram having just seen a portfolio thumbnail. Their mental model is built from every photographer website they've visited before — slow-loading galleries, thumbnail grids, lightboxes that feel like modal dialogs bolted onto a web page, and pinch-to-zoom that either does nothing or zooms the entire browser window.
+
+Their expectation on mobile: *this will probably feel like a website.* The moment native touch physics respond correctly — momentum, rubber-banding — there is a cognitive recalibration: *this site is different.* That recalibration transfers to the photography: *this photographer is different.*
+
+**Existing solution pain points:**
+- Platform galleries: no true pinch-to-zoom on individual images; browser-level zoom only
+- Platform lightboxes: feel like navigating to a new URL, not opening a photo
+- Thumbnail grids: force visitors to process images as a list, not experience them individually
+- Mobile scroll: no momentum, no rubber-banding — feels like dragging content, not flicking through it
+
+### Success Criteria
+
+- **Sub-1-second first image load** on Swiss 4G and home broadband — the image appears before the visitor registers the load
+- **Pinch-to-zoom indistinguishable from iOS Photos** — correct momentum, rubber-band resistance at min/max zoom, smooth deceleration, no jank
+- **Swipe between images feels inevitable** — velocity preserved, next image arrives with physical continuity, not a cut
+- **No layout shift during image load** — dimensions known before load, space reserved, images drop in without moving content
+- **Full-screen lightbox fills the desktop viewport** — no white border, no scrollbar, no competing UI during viewing
+- **Keyboard navigation complete on desktop** — arrow keys, Escape, no broken focus state
+- **Session duration > 2:30 on gallery pages** — the behavioural signal that visitors are experiencing the photography, not evaluating it
+
+### Novel vs. Established Patterns
+
+**Established patterns adopted:**
+- Thumbnail grid as gallery index → lightbox for full-screen viewing (universal, no user education required)
+- Category-based navigation → visitors self-sort by photography type
+- Contact CTA at end of gallery scroll → natural end-of-engagement placement
+- About page with personal portrait and biography → standard photographer portfolio trust pattern
+
+**Novel pattern — native touch physics on web:**
+The pinch-to-zoom + momentum + rubber-banding behaviour is technically achievable on web via Pointer Events API but almost no photographer portfolio site implements it correctly. The innovation is not a new interaction metaphor — it is **implementing a familiar metaphor to native-app standard on web**. No user education required; visitors discover it through natural use.
+
+### Experience Mechanics
+
+**Mobile Gallery**
+
+| Phase | Detail |
+|---|---|
+| Initiation | Tap category → gallery loads; hero image fills 100vw × ~85vh; partial image below fold invites scroll |
+| Scroll | Full-width images, varying aspect ratios, native momentum scroll between them |
+| Tap → Lightbox | Full-screen overlay; image fills screen; swipe left/right to navigate |
+| Pinch-to-zoom | Pointer Events; min 1×, max 4×; rubber-band at limits; momentum on release |
+| Swipe between images | Horizontal swipe; velocity preserved; rubber-band resistance at first/last image |
+| Close lightbox | Pinch-out below 1×, swipe down, or tap outside — springs back to gallery scroll position |
+
+**Desktop Gallery**
+
+| Phase | Detail |
+|---|---|
+| Initiation | Hover image → subtle scale/brightness signal; click → lightbox opens full viewport |
+| Navigation | Arrow keys left/right; mouse wheel to zoom; Escape to close |
+| Feedback | Smooth 200ms fade on open/close; minimal image counter (3/17); arrow indicators on hover only |
+| Close | Escape or click outside; scroll position in gallery preserved |
+
+---
+
+## Visual Design Foundation
+
+### Color System
+
+**Palette — Warm Neutral Register**
+
+| Token | Hex | Use |
+|---|---|---|
+| `background` | `#FAF8F5` | Page background — warm white |
+| `surface` | `#F2EFE9` | Subtle section differentiation, form backgrounds |
+| `border` | `#E8E3DC` | Hairline dividers, input borders |
+| `text-primary` | `#1A1814` | All headings, body text, nav labels |
+| `text-secondary` | `#6B6560` | Captions, labels, secondary copy |
+| `text-tertiary` | `#A09890` | Placeholder text, disabled states |
+| `accent` | `#C4A882` | CTA button backgrounds, active nav states, hover underlines |
+| `accent-hover` | `#B39470` | CTA button hover state |
+| `accent-secondary` | `#8C7B6B` | Testimonial attribution, pricing signal text |
+| `overlay` | `rgba(26, 24, 20, 0.95)` | Gallery lightbox background |
+| `overlay-ui` | `rgba(26, 24, 20, 0.6)` | Nav on scroll (translucent), lightbox UI elements |
+
+**Colour logic:**
+- The photography provides all vibrant colour. The palette exists to not compete.
+- Warm white background complements skin tones in portrait and wedding photography — cooler whites create unflattering contrast.
+- The accent (`#C4A882`) is derived from Sha's warm photography palette — sand, afternoon light, natural tones. It feels native to the imagery, not imported.
+- No status colours except error state in the contact form.
+
+### Typography System
+
+**Font Pairing**
+
+| Role | Font | Source | Weight |
+|---|---|---|---|
+| Display / Hero headings | Cormorant Garamond | Google Fonts (free) | Light 300, Regular 400 |
+| Section headings (H2–H3) | Cormorant Garamond | Google Fonts | SemiBold 600 |
+| Body / UI / Navigation | Inter | Google Fonts (free) | Regular 400, Medium 500 |
+| Pricing signal | Inter | — | Regular 400 (same weight as body) |
+| Language switcher | Inter | — | Medium 500, tracked |
+
+**Rationale:** Cormorant Garamond's extreme stroke contrast reads as editorial at large display sizes — fashion magazine register. Inter provides maximum legibility for reading copy and UI labels — neutral, invisible when doing its job. High contrast between the two registers: expressive in headlines, precise in reading text.
+
+**Type Scale**
+
+| Level | Desktop | Mobile | Font | Weight | Use |
+|---|---|---|---|---|---|
+| Display | 96–120px | 56–72px | Cormorant | 300 | Hero headline, page name |
+| H1 | 64px | 40px | Cormorant | 400 | Category page titles |
+| H2 | 48px | 32px | Cormorant | 600 | Section headers |
+| H3 | 32px | 24px | Cormorant | 600 | Testimonial names, sub-headers |
+| Body large | 20px | 18px | Inter | 400 | About page body, category descriptions |
+| Body | 16px | 16px | Inter | 400 | General copy, form labels |
+| Caption | 13px | 13px | Inter | 400 | Image captions, meta text |
+| Label / Nav | 12px | 12px | Inter | 500 | Navigation, buttons, pricing signal |
+
+**Line heights:** Display/H1: 1.05 (tight, editorial); Body: 1.65 (open, readable); Caption: 1.5.
+
+**Letter spacing:** Display and H1: `-0.02em` (tighten large serif); Labels and nav: `0.08em` (open tracking for small-caps/label register).
+
+### Spacing & Layout Foundation
+
+**Base unit:** 4px. Tailwind default scale extended with larger values in `tailwind.config.ts`:
+
+```
+spacing: {
+  18: '72px',
+  22: '88px',
+  26: '104px',
+  30: '120px',   // section spacing desktop
+  36: '144px',
+  44: '176px',   // hero / editorial breathing room
+}
+```
+
+**Content widths:**
+
+| Context | Max-width | Rationale |
+|---|---|---|
+| Gallery (full-bleed) | 100vw | No container — images own the full width |
+| Text content (About, descriptions) | 720px | Comfortable reading line length |
+| Contact form | 600px | Focused, not overwhelming on desktop |
+| Nav inner | 1400px | Wide, contained on ultra-wide screens |
+
+**Section vertical spacing:** 120px top/bottom desktop, 64px mobile. Primary source of the Quiet Luxury feel — competitors use 40–60px; the additional space is immediately legible as premium.
+
+**Gallery layout:** Images stacked vertically at full width. No masonry grid (fragments emotional experience). Gap: 24px mobile, 40px desktop. Desktop thumbnail index uses 2-column layout only; single-column for primary experience.
+
+### Accessibility Considerations
+
+**Colour contrast (WCAG 2.1):**
+
+| Combination | Ratio | Level |
+|---|---|---|
+| `text-primary` (#1A1814) on `background` (#FAF8F5) | ~15:1 | AAA |
+| `text-secondary` (#6B6560) on `background` | ~5.5:1 | AA |
+| White on `overlay` (rgba 0.95) | ~14:1 | AAA |
+| `accent` (#C4A882) on `background` | ~2.3:1 | Decorative only — never for text |
+
+**Accent constraint:** `#C4A882` is used exclusively for graphic/UI elements with white text on top (white on `#C4A882` passes at ~4.5:1). Never used as text colour itself.
+
+**Interaction accessibility:**
+- Focus states: `ring-2 ring-offset-2` in accent colour on all interactive elements
+- Lightbox: focus trapped, `aria-modal`, `role="dialog"`, Escape to close
+- Language switcher: keyboard accessible, `aria-label`
+- Contact form: all fields labelled, error states with `aria-describedby`
+- Minimum body text: 16px; minimum line height: 1.5 (meets WCAG 1.4.12)
+
+---
+
+## Design Direction Decision
+
+### Design Directions Explored
+
+Six directions were evaluated via interactive HTML mockup (`ux-design-directions.html`), all using the established warm neutral palette (Cormorant Garamond + Inter, `#FAF8F5` background):
+
+| Direction | Layout Concept |
+|---|---|
+| A — Full-Bleed Overlay | Hero image fills full viewport, nav overlaid in white, categories as image cards |
+| B — Editorial Split | Left column: large Cormorant type + category list; right column: single hero image |
+| C — Masthead + Gallery | Large logo masthead, category tabs, gallery starts immediately |
+| D — Staggered Editorial | Category sections alternate image left/right with descriptive text |
+| E — Typographic Index | Oversized headline, categories as typographic list only (no thumbnail images on home) |
+| F — Cinematic Column | Full-width hero, text + category grid, then expanding strip gallery |
+
+### Chosen Direction
+
+**Direction A — Full-Bleed Overlay**
+
+The home page opens with a single photograph filling 100% of the viewport. The navigation floats over it in white text (no background). Sha's name and location are overlaid at the bottom of the hero with a subtle gradient scrim. Below the fold: the five gallery categories presented as full-width image cards with the category name and starting price overlaid.
+
+### Design Rationale
+
+- **Awe before anything else** — the first thing a visitor sees is a photograph at full scale. No UI competes. The Awe emotional goal is served in the first 500ms.
+- **Photography announces the site** — no headline, no description, no CTA above the fold. The image does the selling. Text (and conversion) come after the visitor has already been stopped.
+- **Navigation recedes into the image** — white text over a dark photograph is invisible until needed; it doesn't compete with the hero for attention.
+- **Category image cards extend the photography-first logic** — below the fold, each category is represented by a photograph, not a label. Visitors who scroll see more photography, not navigation chrome.
+- **Highest visual differentiation** — the full-bleed first load is the farthest from any platform template (all competitors show at least some UI chrome above their first image).
+
+### Implementation Approach
+
+**Home page layout:**
+- `position: fixed` nav, `z-index` over hero — transparent background that gains `backdrop-filter: blur` + dark overlay on scroll
+- Hero: `height: 100svh` (safe viewport height for mobile), single curated image as `next/image` with `priority` prop — must be the fastest-loading element on the page
+- Hero overlay text: `position: absolute`, bottom-anchored, `mix-blend-mode: normal` over gradient scrim (`linear-gradient(to top, rgba(26,24,20,0.65) 0%, transparent 60%)`)
+- Category cards: CSS grid `grid-template-columns: 1fr 1fr` on desktop; single column on mobile; images with `overflow: hidden` + subtle `scale` on hover via CSS transition
+- Category card overlay: category name in Cormorant 28px, pricing label in Inter 11px — both `position: absolute` over image with text-shadow
+
+**Gallery category pages:**
+- Same nav treatment (floated, transparent-to-scroll)
+- No hero — page title (Cormorant, large) over first image or as standalone header
+- Full-width vertical image stack, native scroll, gap 24px mobile / 40px desktop
+- Tap/click → lightbox (Direction A's visual language continues: dark overlay, image fills screen)
+
+---
+
+## User Journey Flows
+
+### Journey 1 — Cold Traffic: Discovery to Inquiry
+
+*Personas: Lena & Marco (Swiss wedding couple), James & Mei (international destination)*
+
+```mermaid
+flowchart TD
+    A([Google Search\n'Fotografin Zürich'\n'Wedding Photographer Zurich']) --> B[Home page loads\nmobile or desktop]
+    B --> C{First image\nloads < 1s?}
+    C -->|Yes| D[Hero fills viewport\nAwe response formed]
+    C -->|No - slow load| E[Visitor leaves\nlost conversion]
+    D --> F[Scroll down\nCategory cards appear]
+    F --> G{Which category\nmatches intent?}
+    G -->|Wedding| H[Wedding gallery page]
+    G -->|Portrait/Family/Other| I[Relevant gallery page]
+    H --> J[Browse images\nmobile: swipe + pinch\ndesktop: scroll + click]
+    I --> J
+    J --> K[Tap image → Lightbox\nnative touch physics]
+    K --> L{Emotional response?}
+    L -->|Recognition: 'this is what I want'| M[Continue browsing]
+    L -->|Not the right fit| N([Visitor leaves\nself-selected out])
+    M --> O{CTA reached\nend of gallery?}
+    O -->|Browse more| P[Navigate to About page]
+    O -->|Ready to contact| Q[Contact page]
+    P --> R[Read Sha's story\nWarmth + Connection]
+    R --> S[Testimonials near CTA]
+    S --> Q
+    Q --> T[Fill contact form\n5 fields max]
+    T --> U[Submit\nTurnstile verification]
+    U --> V[Success message\n+ auto-response email]
+    V --> W([Conversion complete\nSha responds within 24h])
+```
+
+**Key moments:**
+- Sub-1s first image load is a binary gate — slow load = lost visitor
+- Category self-selection removes unfit clients before they reach the CTA
+- About page is the trust bridge for cold traffic; without it, inquiry rate drops
+- Auto-response email must arrive within 30 seconds of submission
+
+### Journey 2 — Warm Traffic: Referral Confirmation
+
+*Personas: Sophie (camera-shy family client), Narin (Thai–Swiss professional), HR Anna (corporate)*
+
+```mermaid
+flowchart TD
+    A([Referral recommendation\n'You should check out Sha']) --> B{How does visitor arrive?}
+    B -->|Types 'photosha.ch'| C[Home page]
+    B -->|Follows shared link| D[Specific page - gallery or about]
+    C --> E{Visitor intent}
+    E -->|Confirming existing decision| F[Navigate directly to About]
+    E -->|Evaluating work first| G[Browse relevant gallery]
+    D --> H{Which page?}
+    H -->|Gallery| G
+    H -->|About| F
+    G --> I[Images confirm quality\nRecognition response]
+    I --> F
+    F --> J[Read Sha's story\nSee portrait photo]
+    J --> K{Trust established?}
+    K -->|Yes - 'she seems wonderful'| L[Testimonials reinforce]
+    K -->|Not yet| M[Navigate to relevant gallery]
+    M --> I
+    L --> N[CTA: 'Contact Sha']
+    N --> O[Contact form]
+    O --> P{Session type}
+    P -->|Consumer: family / portrait| Q[Fill 5-field form\nsubmit]
+    P -->|Corporate: HR Anna| R[Copy email address\ncontact directly]
+    Q --> S[Auto-response confirms\nSha follows up personally]
+    R --> T([Direct email thread])
+    S --> U([Conversion complete])
+```
+
+**Key moments:**
+- Warm traffic often skips the gallery — About page is the primary destination
+- Sophie (camera-shy) needs to see natural, unposed images *and* feel Sha's warmth before committing
+- HR Anna may prefer direct email — Contact page must show both options
+- Language state persists across language switch; a visitor who switches to English stays in English through gallery → about → contact
+
+### Journey 3 — Contact Form Completion
+
+*Applies to all personas after decision is made*
+
+```mermaid
+flowchart TD
+    A([Visitor decides to inquire]) --> B[Tap/Click 'Contact Sha']
+    B --> C[Contact page loads]
+    C --> D{Device?}
+    D -->|Mobile| E[Fields keyboard-optimised\nfloating label, large tap targets\nsubmit never below fold]
+    D -->|Desktop| F[Form centred\nmax 600px wide\nlogical tab order]
+    E --> G[Fill: Name]
+    F --> G
+    G --> H[Fill: Email\ntype='email' keyboard on mobile]
+    H --> I[Select: Session type\nWedding / Portrait / Family / Events / Other]
+    I --> J[Fill: Approximate date\noptional]
+    J --> K[Fill: Message\nconversational placeholder]
+    K --> L{Cloudflare Turnstile}
+    L -->|Passes invisible| M[Submit button active]
+    L -->|Challenge required| N[Turnstile widget\nvisitor solves]
+    N --> M
+    M --> O[Visitor submits]
+    O --> P{Resend delivery}
+    P -->|Success| Q[Inline success message]
+    P -->|Failure| R[Error message\n'Try again or email directly'\n+ Sha's email shown]
+    Q --> S[Auto-response email\narrives within 30s\nwarm personal tone]
+    S --> T([Visitor reassured\nSha follows up within 24h])
+```
+
+**Contact form fields:**
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| Name | Text | Yes | Placeholder: "Your name" — no asterisks |
+| Email | Email | Yes | `inputmode="email"` on mobile |
+| Session type | Select | Yes | Wedding, Portrait, Family, Events, Other |
+| Approximate date | Text | No | Placeholder: "When are you thinking?" |
+| Message | Textarea | Yes | Placeholder: "Tell me a little about what you have in mind" |
+
+### Journey Patterns
+
+**Navigation patterns:**
+- **Single entry point per screen** — one primary CTA per page; no competing decisions
+- **About page as universal trust checkpoint** — linked from every gallery page, not just the nav
+- **Language persistence** — language state maintained across all navigation
+
+**Feedback patterns:**
+- **Immediate visual response** — all interactions respond within 100ms via CSS transition
+- **All fields visible at once** — no multi-step form; single submission action
+- **Graceful error recovery** — if form submit fails, Sha's direct email shown as fallback
+
+**Flow optimisation principles:**
+1. **No gates before the gallery** — no splash screens, no cookie banners, no pop-ups; gallery is one tap from home
+2. **Single CTA per page** — competing CTAs removed throughout
+3. **End-of-gallery CTA** — natural exit from any gallery leads to contact; visitors who reach the end are ready
+4. **Auto-response as designed UX** — 30-second auto-response email continues the warmth of the About page
+
+---
+
+## Component Strategy
+
+### Design System Components
+
+**Tailwind utilities (no custom code):** Layout primitives, typography scale, colour tokens, responsive breakpoints — all via `tailwind.config.ts`.
+
+**Radix UI headless primitives (behaviour only, visually custom):**
+- `@radix-ui/react-dialog` — focus trapping, keyboard handling, `aria-modal` for GalleryLightbox
+- `@radix-ui/react-select` — keyboard-accessible session type dropdown in ContactForm
+
+**Touch physics:**
+- `@use-gesture/react` — pointer/touch event handling (pinch, swipe, drag)
+- `react-spring` — physics-based animation (momentum deceleration, rubber-banding)
+
+### Custom Components
+
+**11 custom components across 9 pages:**
+
+#### NavBar
+Fixed navigation overlaid on hero; transitions transparent→blur-on-scroll on interior pages.
+- **States:** Transparent (hero/top) · Blurred dark (scrolled) · Opaque on-bg (interior pages) · Mobile (collapsed)
+- **Accessibility:** `role="navigation"`, `aria-label="Main navigation"`, `aria-current="page"` on active link
+
+#### HeroImage
+Full-viewport first impression. Single photograph, gradient scrim, name + location overlaid at bottom.
+- `height: 100svh`, `next/image` with `priority`, gradient scrim via CSS `::after`
+- `placeholder="blur"` — no flash on load
+
+#### CategoryCard
+Home page grid. Photograph with category name (Cormorant) + pricing (Inter Label) overlaid.
+- **States:** Default · Hover (`scale(1.03)` on image, 400ms) · Focus (ring on wrapper)
+- **Variants:** Standard (2-col) · Wide (full-width — Landscape)
+- **Accessibility:** Entire card is `<a>` with descriptive `aria-label`
+
+#### GalleryScroll
+Full-width vertical image stack on category pages. The primary browse surface.
+- Single column, 100% width images, `aspect-ratio` from metadata, native momentum scroll
+- `next/image` with `sizes="100vw"` and responsive srcSet; dimensions reserved before load (no CLS)
+
+#### GalleryLightbox
+Full-screen viewer with native touch physics. The defining experience.
+- **Mobile:** Pinch-to-zoom (1×–4×), rubber-band at limits, swipe between images with velocity carry, swipe-down to close
+- **Desktop:** Arrow keys, mouse-wheel zoom, Escape to close, prev/next on hover
+- Radix Dialog (focus trap + aria) + use-gesture (touch events) + react-spring (physics)
+- Preloads adjacent images on open; scroll-lock on body while open
+- **Accessibility:** `role="dialog"`, `aria-modal="true"`, `aria-label="Photo viewer"`, full keyboard support
+
+#### LanguageSwitcher
+DE/EN toggle. One action, immediate, no page reload. Persists via Next.js i18n locale routing.
+- Active locale: `text-primary`; inactive: `text-tertiary` with hover underline
+- `aria-current="true"` on active, `hreflang` on `<a>` tags
+
+#### ContactForm
+5-field inquiry form. Mobile-optimised, Turnstile-protected, Resend delivery.
+- Fields: Name · Email (`inputmode="email"`) · Session type (Radix Select) · Approximate date (optional) · Message
+- React Hook Form for state; Resend via Route Handler; `@marsidev/react-turnstile`
+- All fields have `<label>`, `aria-required`, errors via `aria-describedby`; `aria-live` region for submit result
+
+#### TestimonialCard
+Named testimonial (quote + attribution). Placed within 200px scroll of primary CTA — never isolated.
+- Max 3 sentences, first name + session type + year minimum. No anonymous testimonials.
+
+#### PricingSignal
+"Weddings from CHF 3,500" in Inter body weight. Same size and colour as surrounding body text — informational, never promotional. Above/adjacent to primary CTA on Portrait, Wedding, Event, Family pages only.
+
+#### FooterBar
+Single-row footer: copyright · Impressum · Privacy Policy · Language switcher. `background: var(--surface)`.
+
+#### AutoResponseEmail (Resend / React Email template)
+Sent within 30 seconds of form submission. Greeting by name → personal acknowledgement → "Sha will reply within 24h" → first-name signature. Plain text fallback. No logo or header image — same warmth register as the About page.
+
+### Component Implementation Strategy
+
+```
+app/
+  components/
+    nav/        NavBar, LanguageSwitcher
+    hero/       HeroImage
+    gallery/    GalleryScroll, GalleryLightbox, CategoryCard
+    contact/    ContactForm, TestimonialCard, PricingSignal
+    layout/     FooterBar
+  emails/
+    inquiry-auto-response.tsx
+```
+
+### Implementation Roadmap
+
+| Phase | Components | Dependency |
+|---|---|---|
+| 1 — Structure | NavBar, LanguageSwitcher, FooterBar, HeroImage | Everything else depends on nav and hero |
+| 2a — Gallery core | GalleryScroll, CategoryCard, GalleryLightbox (keyboard + fade) | Core product; desktop experience |
+| 2b — Touch physics | GalleryLightbox native pinch/swipe/momentum | The differentiator; most complex |
+| 3 — Conversion | ContactForm, AutoResponseEmail, TestimonialCard, PricingSignal | Final conversion flow |
+| 4 — Polish | Keyboard audit, WCAG check, LCP/CLS audit, momentum fine-tuning | Pre-launch quality gate |
+
+---
+
+## UX Consistency Patterns
+
+### Button Hierarchy
+
+| Level | Appearance | Use |
+|---|---|---|
+| **Primary** | `bg-[#1A1814]` white text, Inter 11px 500 weight, `letter-spacing: 0.1em`, uppercase, `padding: 16px 40px`, no border-radius | One per page — the single CTA |
+| **Secondary** | Transparent bg, `border: 1px solid var(--text)`, same type | Rare — when a primary CTA already exists and a second action is unavoidable |
+| **Ghost / Text link** | No bg, no border, underline on hover, Inter label sizing | Navigation-level actions: category links in text |
+
+**Rules:** Never two primary buttons on the same screen. Button labels are task-verbs ("Contact Sha", not "Let's Talk!"). No border-radius. Primary hover: `background: var(--accent-hover)`, 150ms transition.
+
+### Feedback Patterns
+
+**Loading:**
+- Images: `placeholder="blur"` — warm blurred preview; no spinners
+- Form submit: button shows inline spinner, label changes to "Sending…", becomes disabled
+
+**Success:**
+- Contact form: inline success message replaces form — "Thanks, [Name]. Sha will be in touch within 24 hours." No redirect.
+- Language switch: immediate page re-render; no toast or confirmation
+
+**Errors:**
+- Form field: red `border-color` + error text below via `aria-describedby`
+- Form submit failure: error above submit button with Sha's direct email as fallback; submit re-enables
+- Image load failure: alt text displayed; container maintains layout
+
+**No toast notifications.** All feedback is inline, contextual, and calm. Toasts break the Quiet Luxury register.
+
+### Form Patterns
+
+- **Labels:** Visible `<label>` above each field — not placeholder-only
+- **Focus:** `border-color: var(--text)` + `outline: 2px solid var(--text)` offset 2px
+- **Error:** `border-color: #C0392B` + error message in Inter 13px below field
+- **No green checkmarks** — don't over-communicate success
+
+**Mobile keyboard optimisations:**
+
+| Field | type / inputmode | autocomplete |
+|---|---|---|
+| Name | `text` | `name` |
+| Email | `email` | `email` |
+| Session type | Radix `<select>` | off |
+| Date | `text` / `inputmode="text"` | off |
+| Message | `<textarea>` | off |
+
+Tab order: top to bottom, no unexpected jumps. All 5 fields + submit visible without scrolling on iPhone SE.
+
+### Navigation Patterns
+
+**Desktop:**
+- Fixed, `z-index: 50`; transparent on hero → `backdrop-filter: blur(12px)` + dark overlay after 80px scroll
+- Interior pages: `background: var(--bg)`, `border-bottom: 1px solid var(--border)`
+- Active link: `border-bottom: 2px solid var(--text)`; inactive: `color: var(--text-2)`
+- Hover: underline slides in, 200ms
+
+**Mobile:** Category links as scrollable row below logo bar, or hamburger → full-screen overlay (finalised in responsive step).
+
+**Language switcher:** Always in nav, never hidden. Active locale full opacity; inactive at `text-tertiary`.
+
+**Scroll:** No scroll-jacking anywhere. Lightbox locks body scroll (`overflow: hidden`). Scroll position restored on lightbox close.
+
+### Image Loading Patterns
+
+- All images via `next/image` — never raw `<img>`
+- `placeholder="blur"` + `blurDataURL` on every image
+- `sizes` prop always explicit: `"100vw"` full-width, `"50vw"` 2-column
+- `alt` always descriptive: "Wedding couple at Zürich lakeside" not "photo"
+- Hero: `priority={true}` — no lazy load
+- Gallery: lazy-loaded, `aspect-ratio` from metadata (prevents CLS), fade in `opacity: 0→1` 200ms on load
+- Lightbox: adjacent images preloaded when lightbox opens
+
+### Overlay & Lightbox Patterns
+
+- **Open:** overlay fades in 200ms; body scroll locked immediately; focus trapped (Radix Dialog)
+- **While open:** `aria-modal="true"`, `role="dialog"`; ← → navigate, Escape closes, Tab stays within
+- **Close:** Escape, tap backdrop, swipe-down (mobile), pinch below 1× (mobile); 150ms fade out; focus returns to trigger element; scroll position restored
+
+### Hover & Focus Consistency
+
+- All interactive elements: `outline: 2px solid var(--text)`, `outline-offset: 2px` — no `outline: none` without equivalent
+- Hover transitions: max 200ms, `ease` or `ease-out` — spring/bounce reserved for touch physics only
+- `cursor: pointer` on all non-link clickables; `cursor: zoom-in` on gallery images
+- Image hover (gallery + category cards): `transform: scale(1.03)`, 400ms ease, `overflow: hidden` on container
+
+---
+
+## Responsive Design & Accessibility
+
+### Responsive Strategy
+
+Mobile-first in code; equally excellent on both. All Tailwind classes written mobile-first; responsive variants (`md:`, `lg:`) add desktop behaviour on top. Swiss market: iOS + Safari is the primary mobile browser — test all touch interactions on Safari iOS first.
+
+| Device | Width | Primary use |
+|---|---|---|
+| iPhone SE (minimum) | 375px | Verify nothing breaks |
+| iPhone 14 Pro (primary) | 393px | Main mobile target |
+| iPad | 768px | Tablet breakpoint |
+| MacBook 13" | 1280px | Standard desktop |
+| Wide desktop | 1440px+ | Max-width container applies |
+
+### Breakpoint Strategy
+
+Tailwind defaults with one addition:
+
+```js
+screens: {
+  'xs': '375px',  // iPhone SE minimum
+  // sm (640), md (768), lg (1024), xl (1280), 2xl (1536) — Tailwind defaults
+}
+```
+
+**Component responsive behaviour:**
+
+| Component | Mobile (< 768px) | Desktop (≥ 1024px) |
+|---|---|---|
+| NavBar | Logo + lang switcher; category links as horizontal scroll row | Full links inline |
+| HeroImage | `100svh`, text `bottom: 32px left: 24px` | `100svh`, larger display type, more padding |
+| CategoryCard grid | Single column | 2-column; Landscape spans full width |
+| GalleryScroll | Full-width, `gap: 16px` | Full-width, `gap: 40px` |
+| GalleryLightbox | Pinch-zoom, swipe nav, swipe-down close | Arrow keys, wheel zoom, Escape; hover arrows |
+| ContactForm | Full width, mobile keyboards | Max-width 600px, centred |
+| Type: Display | 56–72px | 96–120px |
+| Type: H1 | 40px | 64px |
+
+### Accessibility Strategy
+
+**Target: WCAG 2.1 Level AA.** Maintain AAA where already achieved (primary text contrast ~15:1).
+
+**Touch targets:** Minimum 44×44px on all interactive elements. Form fields `min-height: 48px` on mobile.
+
+**Semantic HTML:** `<header>`, `<nav>`, `<main>`, `<footer>` on every page. `<h1>` on every page. Heading hierarchy never skips levels. `<form>`, `<fieldset>`, `<legend>` for contact form.
+
+**Screen reader requirements:**
+- Gallery images: descriptive `alt` text (content, not decoration)
+- Icon-only buttons: `aria-label` (lightbox close, prev, next)
+- Form results: `aria-live="polite"` region
+- Active nav link: `aria-current="page"`
+- Active language: `aria-current="true"`
+- `<html lang="de">` / `<html lang="en">` per locale via Next.js i18n
+
+**`prefers-reduced-motion`:** All CSS transitions and animations suppressed when enabled. Global rule:
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+Lightbox: images snap to position (no spring). Image fade-in: instant.
+
+**Skip link:** First focusable element on every page — `<a href="#main-content">Skip to main content</a>`, visible on focus, styled with accent colour.
+
+### Testing Strategy
+
+**Devices (real hardware, mandatory pre-launch):** iPhone SE, iPhone 14 Pro, iPad, MacBook 13", wide desktop.
+
+**Browsers:** Safari iOS (critical), Chrome Android (high), Safari macOS (high), Firefox desktop (medium).
+
+**Accessibility checklist:**
+- [ ] Axe DevTools — resolve all Critical and Serious issues
+- [ ] Keyboard-only navigation — full site without mouse
+- [ ] VoiceOver iOS — gallery browse + contact form
+- [ ] VoiceOver macOS — full site navigation
+- [ ] Contrast — verify all text combinations
+- [ ] 200% browser zoom — no content cut off
+- [ ] Reduced motion — all animations suppressed
+- [ ] Touch targets — all ≥ 44×44px
+
+**Performance targets (Lighthouse):** LCP < 1.5s · CLS < 0.1 · a11y score ≥ 95
+
+### Implementation Guidelines
+
+- All base styles mobile-first; `md:` and `lg:` for desktop
+- Font sizes in `rem`; viewport heights in `svh`/`dvh`; fluid display type via `clamp()`
+- Images: `sizes` prop always explicit; `aspect-ratio` CSS reserves space before load
+- Focus states via `:focus-visible` (not `:focus` — avoids rings on mouse click)
+- Form errors: text adjacent to field via `aria-describedby`, never colour-only
+- Lightbox: use Radix UI Dialog — do not re-implement focus trapping manually
+- `prefers-reduced-motion`: CSS global rule, not per-component
