@@ -1,0 +1,77 @@
+{
+  "nav": {
+    "portrait": "Portrait",
+    "wedding": "Wedding",
+    "event": "Event",
+    "family": "Family",
+    "landscape": "Landscape",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "hero": {
+      "headline": "Photography with heart",
+      "subline": "Zürich & surroundings"
+    },
+    "cta": "Explore gallery"
+  },
+  "gallery": {
+    "cta": "Enquire about a session"
+  },
+  "contact": {
+    "title": "Contact",
+    "name": "Name",
+    "email": "Email",
+    "sessionType": "Type of session",
+    "approximateDate": "Approximate date",
+    "message": "Message",
+    "submit": "Send enquiry",
+    "success": "Thank you! I'll be in touch soon.",
+    "error": "Something went wrong. Write to me directly at",
+    "sessionTypes": {
+      "portrait": "Portrait",
+      "wedding": "Wedding",
+      "event": "Event",
+      "family": "Family",
+      "landscape": "Landscape",
+      "other": "Other"
+    }
+  },
+  "about": {
+    "title": "About"
+  },
+  "meta": {
+    "home": {
+      "title": "Sha – Photographer Zürich",
+      "description": "Portrait, wedding, event, family & landscape – photographer in the Zürich region."
+    },
+    "portrait": {
+      "title": "Portrait Photography – Sha Zürich",
+      "description": "Authentic portrait sessions in the Zürich region."
+    },
+    "wedding": {
+      "title": "Wedding Photography – Sha Zürich",
+      "description": "Warm, real wedding photography in Switzerland."
+    },
+    "event": {
+      "title": "Event Photography – Sha Zürich",
+      "description": "Corporate events, parties and celebrations – photographed professionally."
+    },
+    "family": {
+      "title": "Family Photography – Sha Zürich",
+      "description": "Natural family photos in the Zürich region."
+    },
+    "landscape": {
+      "title": "Landscape Photography – Sha",
+      "description": "Switzerland at its most beautiful."
+    },
+    "about": {
+      "title": "About – Sha Photographer",
+      "description": "Meet Sha – photographer from Zürich with a passion for real moments."
+    },
+    "contact": {
+      "title": "Contact – Sha Photographer Zürich",
+      "description": "Get in touch and let's plan your session."
+    }
+  }
+}
