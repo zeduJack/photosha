@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
         hostname: 'images.photosha.ch',
         pathname: '/photos/**',
       },
+      // r2.dev public bucket URL (dev/staging fallback before custom domain is live)
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+        pathname: '/photos/**',
+      },
     ],
   },
 }
