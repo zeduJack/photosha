@@ -26,8 +26,10 @@
     "approximateDate": "Approximate date",
     "message": "Message",
     "submit": "Send enquiry",
-    "success": "Thank you! I'll be in touch soon.",
+    "sending": "Sending…",
+    "success": "Thanks, {name}. Sha will be in touch within 24 hours.",
     "error": "Something went wrong. Write to me directly at",
+    "fallbackEmail": "sha@photosha.ch",
     "sessionTypes": {
       "portrait": "Portrait",
       "wedding": "Wedding",

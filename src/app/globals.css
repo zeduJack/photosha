@@ -82,6 +82,28 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-primary);
 }
 
+/* ─── Gallery ───────────────────────────────────────────────── */
+
+/* Hide horizontal scrollbar on mobile nav */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Animations ────────────────────────────────────────────── */
+
+@keyframes gallery-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@theme {
+  --animate-gallery-fade: gallery-fade 200ms ease-out;
+}
+
 /* ─── Motion ────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {

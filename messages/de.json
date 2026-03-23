@@ -26,8 +26,10 @@
     "approximateDate": "Ungefähres Datum",
     "message": "Nachricht",
     "submit": "Anfrage senden",
-    "success": "Vielen Dank! Ich melde mich bald bei dir.",
+    "sending": "Wird gesendet…",
+    "success": "Danke, {name}. Sha meldet sich innerhalb von 24 Stunden.",
     "error": "Etwas hat nicht geklappt. Schreib mir direkt an",
+    "fallbackEmail": "sha@photosha.ch",
     "sessionTypes": {
       "portrait": "Portrait",
       "wedding": "Hochzeit",

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { NavBar } from '@/components/nav-bar'
 import { HeroImage } from '@/components/hero-image'
@@ -19,6 +20,28 @@ const CATEGORIES: GalleryCategory[] = [
   'family',
   'landscape',
 ]
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'meta.home' })
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { de: '/de', en: '/en' },
+    },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      images: ['https://images.photosha.ch/photos/wedding/0010.webp'],
+    },
+  }
+}
 
 const COVER_IMAGES = {
   portrait:  portraitImages[0],
@@ -43,6 +66,31 @@ export default async function HomePage({
       <NavBar variant="hero" />
 
       <main>
+        {/* JSON-LD LocalBusiness structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'LocalBusiness',
+              name: 'Sha — Fotografin',
+              url: 'https://photosha.ch',
+              image: 'https://images.photosha.ch/photos/wedding/0010.webp',
+              priceRange: 'CHF 450 – CHF 9000',
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: 'Zürich',
+                addressCountry: 'CH',
+              },
+              geo: {
+                '@type': 'GeoCoordinates',
+                latitude: 47.3769,
+                longitude: 8.5417,
+              },
+            }),
+          }}
+        />
+
         {/* Hero — full viewport */}
         <HeroImage image={heroImage} />
 
