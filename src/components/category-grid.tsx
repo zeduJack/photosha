@@ -79,9 +79,9 @@ export function CategoryGrid({ items }: { items: GridItem[] }) {
         style={{
           display: 'grid',
           gridTemplateColumns: '3fr 2fr',
-          gridTemplateRows: '260px 260px 190px',
-          gap: '4px',
-          width: '520px',
+          gridTemplateRows: '420px 420px 300px',
+          gap: '12px',
+          width: '900px',
           maxWidth: '100%',
           margin: '0 auto',
         }}
@@ -100,10 +100,10 @@ export function CategoryGrid({ items }: { items: GridItem[] }) {
               fill
               sizes={
                 col === 'full'
-                  ? '(max-width: 520px) 100vw, 520px'
+                  ? '(max-width: 900px) 100vw, 900px'
                   : col === 'left'
-                  ? '(max-width: 520px) 60vw, 312px'
-                  : '(max-width: 520px) 40vw, 208px'
+                  ? '(max-width: 900px) 60vw, 540px'
+                  : '(max-width: 900px) 40vw, 360px'
               }
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:group-hover:scale-100"
               placeholder="blur"
