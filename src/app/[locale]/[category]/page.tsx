@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { NavBar } from '@/components/nav-bar'
+import { PageSlideIn } from '@/components/page-slide-in'
 import { GalleryLightbox } from '@/components/gallery-lightbox'
 import { PricingSignal } from '@/components/pricing-signal'
 import { TestimonialCard } from '@/components/testimonial-card'
@@ -96,43 +97,48 @@ export default async function GalleryPage({
     <>
       <NavBar variant="page" />
 
-      <main className="pt-14">
-        {/* Page title */}
-        <div className="px-4 md:px-8 lg:px-12 pt-12 pb-8 max-w-[1440px] mx-auto">
-          <h1 className="font-display font-light text-[var(--font-size-h1)] leading-tight text-[var(--color-text-primary)]">
-            {t(`nav.${cat}`)}
-          </h1>
-          {isEvent && (
-            <p className="mt-4 font-body text-[var(--font-size-body-lg)] text-[var(--color-text-secondary)] max-w-prose">
-              {locale === 'de'
-                ? 'Firmenanlässe, Feste, Geburtstage — und auf Wunsch auch als Fotobuch.'
-                : 'Corporate events, celebrations, birthdays — and available as a photobook.'}
-            </p>
-          )}
-        </div>
-
-        {/* Full-width gallery */}
-        <section aria-label={t(`nav.${cat}`)}>
-          <GalleryLightbox images={images} />
-        </section>
-
-        {/* Below-gallery content */}
-        <div className="px-4 md:px-8 lg:px-12 py-16 max-w-[800px] mx-auto flex flex-col gap-10">
-          <PricingSignal category={cat} />
-
-          {testimonial && <TestimonialCard testimonial={testimonial} />}
-
-          {/* Primary CTA */}
-          <div>
-            <Link
-              href="/contact"
-              className="inline-block bg-[var(--color-text-primary)] text-white font-body font-medium text-[11px] tracking-[var(--letter-spacing-wider)] uppercase px-10 py-4 hover:bg-[var(--color-accent-hover)] transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
-            >
-              {t('gallery.cta')}
-            </Link>
+      <PageSlideIn>
+        <main className="pt-14">
+          {/* Page title */}
+          <div className="px-6 md:px-16 lg:px-24 xl:px-32 pt-12 pb-8 max-w-[1440px] mx-auto">
+            <h1 className="font-display font-light text-[var(--font-size-h1)] leading-tight text-[var(--color-text-primary)]">
+              {t(`nav.${cat}`)}
+            </h1>
+            {isEvent && (
+              <p className="mt-4 font-body text-[var(--font-size-body-lg)] text-[var(--color-text-secondary)] max-w-prose">
+                {locale === 'de'
+                  ? 'Firmenanlässe, Feste, Geburtstage — und auf Wunsch auch als Fotobuch.'
+                  : 'Corporate events, celebrations, birthdays — and available as a photobook.'}
+              </p>
+            )}
           </div>
-        </div>
-      </main>
+
+          {/* Gallery — constrained with generous side space */}
+          <section
+            aria-label={t(`nav.${cat}`)}
+            className="px-6 md:px-16 lg:px-24 xl:px-32"
+          >
+            <GalleryLightbox images={images} />
+          </section>
+
+          {/* Below-gallery content */}
+          <div className="px-6 md:px-16 lg:px-24 xl:px-32 py-16 max-w-[900px] flex flex-col gap-10">
+            <PricingSignal category={cat} />
+
+            {testimonial && <TestimonialCard testimonial={testimonial} />}
+
+            {/* Primary CTA */}
+            <div>
+              <Link
+                href="/contact"
+                className="inline-block bg-[var(--color-text-primary)] text-white font-body font-medium text-[11px] tracking-[var(--letter-spacing-wider)] uppercase px-10 py-4 hover:bg-[var(--color-accent-hover)] transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+              >
+                {t('gallery.cta')}
+              </Link>
+            </div>
+          </div>
+        </main>
+      </PageSlideIn>
 
       <FooterBar />
     </>

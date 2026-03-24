@@ -29,7 +29,7 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
         preload: [1, 2],
       }}
     >
-      <div className="flex flex-col gap-4 md:gap-10 w-full">
+      <div className="flex flex-col gap-8 md:gap-16 w-full">
         {images.map((image, i) => (
           <Item
             key={image.src}
