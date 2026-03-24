@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { NavBar } from '@/components/nav-bar'
 import { HeroImage } from '@/components/hero-image'
-import { CategoryCard } from '@/components/category-card'
+import { CategoryGrid } from '@/components/category-grid'
 import { FooterBar } from '@/components/footer-bar'
 import { heroImage } from '@/data/hero'
 import { startingPrices } from '@/data/pricing'
@@ -11,15 +11,6 @@ import { weddingImages } from '@/data/gallery/wedding'
 import { eventImages } from '@/data/gallery/event'
 import { familyImages } from '@/data/gallery/family'
 import { landscapeImages } from '@/data/gallery/landscape'
-import type { GalleryCategory } from '@/types/gallery'
-
-const CATEGORIES: GalleryCategory[] = [
-  'portrait',
-  'wedding',
-  'event',
-  'family',
-  'landscape',
-]
 
 export async function generateMetadata({
   params,
@@ -43,13 +34,13 @@ export async function generateMetadata({
   }
 }
 
-const COVER_IMAGES = {
-  portrait:  portraitImages[0],
-  wedding:   weddingImages[0],
-  event:     eventImages[0],
-  family:    familyImages[0],
-  landscape: landscapeImages[0],
-}
+const GRID_ITEMS = [
+  { category: 'portrait'  as const, image: portraitImages[0]  },
+  { category: 'wedding'   as const, image: weddingImages[0]   },
+  { category: 'event'     as const, image: eventImages[0]     },
+  { category: 'family'    as const, image: familyImages[0]    },
+  { category: 'landscape' as const, image: landscapeImages[0] },
+]
 
 export default async function HomePage({
   params,
@@ -94,29 +85,18 @@ export default async function HomePage({
         {/* Hero — full viewport */}
         <HeroImage image={heroImage} />
 
-        {/* Category card grid */}
-        <section
-          aria-label={t('home.cta')}
-          className="grid grid-cols-1 md:grid-cols-2"
-        >
-          {CATEGORIES.map((category) => {
+        {/* Category grid — asymmetric 2-col, GSAP slide-in */}
+        <CategoryGrid
+          items={GRID_ITEMS.map(({ category, image }) => {
             const price = startingPrices[category]
-            return (
-              <CategoryCard
-                key={category}
-                category={category}
-                label={t(`nav.${category}`)}
-                pricingLabel={
-                  price != null
-                    ? t('pricing.from', { price })
-                    : undefined
-                }
-                image={COVER_IMAGES[category]}
-                fullWidth={category === 'landscape'}
-              />
-            )
+            return {
+              category,
+              image,
+              label: t(`nav.${category}`),
+              pricingLabel: price != null ? t('pricing.from', { price }) : undefined,
+            }
           })}
-        </section>
+        />
       </main>
 
       <FooterBar />
