@@ -72,14 +72,14 @@ export function CategoryGrid({ items }: { items: GridItem[] }) {
   return (
     <section
       aria-label="Photography categories"
-      className="py-16 md:py-24 px-4"
+      className="py-16 md:py-24 px-8 md:px-16 lg:px-24"
     >
       <div
         ref={gridRef}
         style={{
           display: 'grid',
           gridTemplateColumns: '3fr 2fr',
-          gridTemplateRows: '55vw 55vw 38vw',
+          gridTemplateRows: '45vw 45vw 32vw',
           gap: '32px',
           width: '100%',
           maxWidth: '100%',
