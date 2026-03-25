@@ -121,6 +121,7 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
       options={{
         bgOpacity: 0.95,
         preload: [1, 2],
+        history: true,
       }}
     >
       <div style={{ display: 'flex', gap: GUTTER }}>
