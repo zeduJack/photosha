@@ -27,23 +27,24 @@ export function CategoryGrid({ items }: { items: GridItem[] }) {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    let ctx: ReturnType<typeof import('gsap').gsap.context> | undefined
+    let triggers: import('gsap/ScrollTrigger').ScrollTrigger[] = []
 
     async function init() {
       const { gsap } = await import('gsap')
       const { ScrollTrigger } = await import('gsap/ScrollTrigger')
       gsap.registerPlugin(ScrollTrigger)
 
-      ctx = gsap.context(() => {
-        ;[
-          { ref: leftRef,  x: -60 },
-          { ref: rightRef, x:  60 },
-        ].forEach(({ ref, x }) => {
-          const images = ref.current?.querySelectorAll<HTMLElement>('[data-item]')
-          images?.forEach((el, i) => {
-            gsap.from(el, {
-              x,
-              opacity: 0,
+      ;[
+        { ref: leftRef,  x: -60 },
+        { ref: rightRef, x:  60 },
+      ].forEach(({ ref, x }) => {
+        ref.current?.querySelectorAll<HTMLElement>('[data-item]').forEach((el, i) => {
+          const tween = gsap.fromTo(
+            el,
+            { x, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
               duration: 0.75,
               ease: 'power2.out',
               delay: i * 0.1,
@@ -51,15 +52,18 @@ export function CategoryGrid({ items }: { items: GridItem[] }) {
                 trigger: el,
                 start: 'top 88%',
                 toggleActions: 'play none none none',
+                once: true,
               },
-            })
-          })
+            }
+          )
+          if (tween.scrollTrigger) triggers.push(tween.scrollTrigger)
         })
       })
     }
 
     init()
-    return () => ctx?.revert()
+    // Kill triggers only — do NOT revert visual state so back-navigation works
+    return () => { triggers.forEach(t => t.kill()) }
   }, [])
 
   // Distribute items to left/right column by cumulative height (balance algorithm)
