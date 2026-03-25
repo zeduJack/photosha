@@ -121,7 +121,24 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
       options={{
         bgOpacity: 0.95,
         preload: [1, 2],
-        history: true,
+      }}
+      onOpen={(pswp) => {
+        // Push a history entry so the back button closes the lightbox
+        history.pushState({ pswp: true }, '')
+
+        const onPop = () => {
+          pswp.close()
+          window.removeEventListener('popstate', onPop)
+        }
+        window.addEventListener('popstate', onPop)
+
+        // If the user closes via UI (not back button), clean up the history entry
+        pswp.on('close', () => {
+          window.removeEventListener('popstate', onPop)
+          if (history.state?.pswp) {
+            history.back()
+          }
+        })
       }}
     >
       <div style={{ display: 'flex', gap: GUTTER }}>
