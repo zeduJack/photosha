@@ -80,10 +80,11 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
   const renderColumn = (
     col: Array<GalleryImage & { originalIndex: number }>,
     ref: React.RefObject<HTMLDivElement | null>,
+    indexOffset: number,
   ) => (
     <div ref={ref} style={{ flex: '1 1 0', minWidth: 0 }}>
-      {col.map((image) => (
-        <div key={image.src} data-item style={{ marginBottom: GUTTER }}>
+      {col.map((image, colIdx) => (
+        <div key={image.src} data-item data-pswp-idx={indexOffset + colIdx} style={{ marginBottom: GUTTER }}>
           <Item
             original={image.src}
             width={image.width}
@@ -123,18 +124,24 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
         preload: [1, 2],
       }}
       onOpen={(pswp) => {
-        // Push a history entry so the back button closes the lightbox
         history.pushState({ pswp: true }, '')
 
+        const scrollToCurrentItem = () => {
+          const idx = pswp.currIndex
+          const el = document.querySelector<HTMLElement>(`[data-pswp-idx="${idx}"]`)
+          el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+
         const onPop = () => {
+          scrollToCurrentItem()
           pswp.close()
           window.removeEventListener('popstate', onPop)
         }
         window.addEventListener('popstate', onPop)
 
-        // If the user closes via UI (not back button), clean up the history entry
         pswp.on('close', () => {
           window.removeEventListener('popstate', onPop)
+          scrollToCurrentItem()
           if (history.state?.pswp) {
             history.back()
           }
@@ -142,8 +149,8 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
       }}
     >
       <div style={{ display: 'flex', gap: GUTTER }}>
-        {renderColumn(leftImages,  leftRef)}
-        {renderColumn(rightImages, rightRef)}
+        {renderColumn(leftImages,  leftRef,  0)}
+        {renderColumn(rightImages, rightRef, leftImages.length)}
       </div>
     </Gallery>
   )
