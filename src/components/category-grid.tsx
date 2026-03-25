@@ -13,14 +13,16 @@ export interface GridItem {
   pricingLabel?: string
 }
 
+const GUTTER = 32 // px — gap between columns AND below each image
+
 /**
- * 2-column asymmetric photo grid — matches the old photosha layout.
- * Left col 60% / right col 40%, 3 rows, 4px gap, ~520px centred.
- * GSAP ScrollTrigger: each cell slides in from its side when it enters
- * the viewport.
+ * Two equal columns, images at natural aspect ratio, 32px gap everywhere.
+ * Items distributed by height-balancing (same algorithm as old photosha.ch).
+ * GSAP: left column slides from left, right column slides from right.
  */
 export function CategoryGrid({ items }: { items: GridItem[] }) {
-  const gridRef = useRef<HTMLDivElement>(null)
+  const leftRef  = useRef<HTMLDivElement>(null)
+  const rightRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -32,100 +34,105 @@ export function CategoryGrid({ items }: { items: GridItem[] }) {
       const { ScrollTrigger } = await import('gsap/ScrollTrigger')
       gsap.registerPlugin(ScrollTrigger)
 
-      const cells = gridRef.current?.querySelectorAll<HTMLElement>('[data-col]')
-      if (!cells) return
-
       ctx = gsap.context(() => {
-        cells.forEach((cell) => {
-          const col = cell.dataset.col
-          const fromX = col === 'left' ? -60 : col === 'right' ? 60 : 0
-          gsap.from(cell, {
-            x: fromX,
-            opacity: 0,
-            duration: 0.75,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: cell,
-              start: 'top 88%',
-              toggleActions: 'play none none none',
-            },
+        ;[
+          { ref: leftRef,  x: -60 },
+          { ref: rightRef, x:  60 },
+        ].forEach(({ ref, x }) => {
+          const images = ref.current?.querySelectorAll<HTMLElement>('[data-item]')
+          images?.forEach((el, i) => {
+            gsap.from(el, {
+              x,
+              opacity: 0,
+              duration: 0.75,
+              ease: 'power2.out',
+              delay: i * 0.1,
+              scrollTrigger: {
+                trigger: el,
+                start: 'top 88%',
+                toggleActions: 'play none none none',
+              },
+            })
           })
         })
-      }, gridRef)
+      })
     }
 
     init()
     return () => ctx?.revert()
   }, [])
 
-  // Fixed order: portrait, wedding, event, family, landscape
-  const [a, b, c, d, e] = items
+  // Distribute items to left/right column by cumulative height (balance algorithm)
+  let leftH = 0
+  let rightH = 0
+  const left: GridItem[]  = []
+  const right: GridItem[] = []
 
-  const cells: Array<GridItem & { col: 'left' | 'right' | 'full'; row: number }> = [
-    { ...a, col: 'left',  row: 1 },
-    { ...b, col: 'right', row: 1 },
-    { ...c, col: 'left',  row: 2 },
-    { ...d, col: 'right', row: 2 },
-    { ...e, col: 'full',  row: 3 },
-  ]
+  items.forEach((item) => {
+    if (leftH <= rightH) {
+      left.push(item)
+      leftH += item.image.height / item.image.width + GUTTER
+    } else {
+      right.push(item)
+      rightH += item.image.height / item.image.width + GUTTER
+    }
+  })
+
+  const renderColumn = (
+    col: GridItem[],
+    ref: React.RefObject<HTMLDivElement | null>,
+  ) => (
+    <div ref={ref} style={{ flex: '1 1 0', minWidth: 0 }}>
+      {col.map((item) => (
+        <div
+          key={item.category}
+          data-item
+          style={{ marginBottom: GUTTER }}
+        >
+          <Link
+            href={`/${item.category}` as '/portrait'}
+            aria-label={`${item.label} gallery`}
+            className="group relative block overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]"
+          >
+            <Image
+              src={item.image.src}
+              alt={item.image.alt}
+              width={item.image.width}
+              height={item.image.height}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="w-full h-auto block transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
+              placeholder="blur"
+              blurDataURL={item.image.blurDataURL}
+            />
+
+            {/* Label overlay — matches old site exactly */}
+            <div
+              className="absolute bottom-0 left-0 right-0 px-4 py-3"
+              style={{ background: 'rgba(80,80,80,0.5)' }}
+            >
+              <span className="text-white font-body font-medium uppercase tracking-[var(--letter-spacing-wide)] text-[11px]">
+                {item.label}
+              </span>
+              {item.pricingLabel && (
+                <span className="ml-2 text-white/70 font-body text-[10px]">
+                  {item.pricingLabel}
+                </span>
+              )}
+            </div>
+          </Link>
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <section
       aria-label="Photography categories"
       className="py-16 md:py-24 px-8 md:px-16 lg:px-24"
     >
-      <div
-        ref={gridRef}
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '3fr 2fr',
-          gridTemplateRows: '45vw 45vw 32vw',
-          gap: '32px',
-          width: '100%',
-          maxWidth: '100%',
-          margin: '0 auto',
-        }}
-      >
-        {cells.map(({ category, label, pricingLabel, image, col }) => (
-          <Link
-            key={category}
-            href={`/${category}` as '/portrait'}
-            aria-label={`${label} gallery`}
-            data-col={col}
-            className={`relative block overflow-hidden group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-text-primary)]${col === 'full' ? ' col-span-2' : ''}`}
-          >
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              sizes={
-                col === 'full'
-                  ? '100vw'
-                  : col === 'left'
-                  ? '60vw'
-                  : '40vw'
-              }
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:group-hover:scale-100"
-              placeholder="blur"
-              blurDataURL={image.blurDataURL}
-            />
-
-            {/* Bottom label overlay */}
-            <div
-              className="absolute bottom-0 left-0 right-0 flex items-center gap-2 px-3 py-[7px]"
-              style={{ background: 'rgba(0,0,0,0.52)' }}
-            >
-              <span className="text-white font-body font-medium uppercase tracking-[var(--letter-spacing-wide)] text-[10px]">
-                {label}
-              </span>
-              {pricingLabel && (
-                <span className="text-white/65 font-body text-[9px]">
-                  {pricingLabel}
-                </span>
-              )}
-            </div>
-          </Link>
-        ))}
+      <div style={{ display: 'flex', gap: GUTTER }}>
+        {renderColumn(left,  leftRef)}
+        {renderColumn(right, rightRef)}
       </div>
     </section>
   )
