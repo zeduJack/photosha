@@ -100,7 +100,7 @@ export default async function GalleryPage({
       <PageSlideIn>
         <main className="pt-14">
           {/* Page title */}
-          <div className="px-6 md:px-16 lg:px-24 xl:px-32 pt-12 pb-8 max-w-[1440px] mx-auto">
+          <div className="px-8 md:px-16 lg:px-24 pt-12 pb-8">
             <h1 className="font-display font-light text-[var(--font-size-h1)] leading-tight text-[var(--color-text-primary)]">
               {t(`nav.${cat}`)}
             </h1>
@@ -113,16 +113,16 @@ export default async function GalleryPage({
             )}
           </div>
 
-          {/* Gallery — constrained with generous side space */}
+          {/* Gallery */}
           <section
             aria-label={t(`nav.${cat}`)}
-            className="px-6 md:px-16 lg:px-24 xl:px-32"
+            className="px-8 md:px-16 lg:px-24"
           >
             <GalleryLightbox images={images} />
           </section>
 
           {/* Below-gallery content */}
-          <div className="px-6 md:px-16 lg:px-24 xl:px-32 py-16 max-w-[900px] flex flex-col gap-10">
+          <div className="px-8 md:px-16 lg:px-24 py-16 max-w-[900px] flex flex-col gap-10">
             <PricingSignal category={cat} />
 
             {testimonial && <TestimonialCard testimonial={testimonial} />}
