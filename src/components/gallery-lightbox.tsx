@@ -126,14 +126,18 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
       onOpen={(pswp) => {
         history.pushState({ pswp: true }, '')
 
-        const scrollToCurrentItem = () => {
-          const idx = pswp.currIndex
-          const el = document.querySelector<HTMLElement>(`[data-pswp-idx="${idx}"]`)
-          el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // Silently keep the background scrolled to the current photo
+        // while the lightbox is open — so closing reveals the right position
+        const syncScroll = () => {
+          const el = document.querySelector<HTMLElement>(
+            `[data-pswp-idx="${pswp.currIndex}"]`
+          )
+          el?.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'center' })
         }
 
+        pswp.on('change', syncScroll)
+
         const onPop = () => {
-          scrollToCurrentItem()
           pswp.close()
           window.removeEventListener('popstate', onPop)
         }
@@ -141,7 +145,6 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
 
         pswp.on('close', () => {
           window.removeEventListener('popstate', onPop)
-          scrollToCurrentItem()
           if (history.state?.pswp) {
             history.back()
           }
