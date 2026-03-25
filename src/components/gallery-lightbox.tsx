@@ -124,10 +124,15 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
         preload: [1, 2],
       }}
       onOpen={(pswp) => {
+        // Prevent the browser from restoring the old scroll position
+        // when history.back() is called — our syncScroll sets the right position
+        const prevScrollRestoration = history.scrollRestoration
+        history.scrollRestoration = 'manual'
+
         history.pushState({ pswp: true }, '')
 
-        // Silently keep the background scrolled to the current photo
-        // while the lightbox is open — so closing reveals the right position
+        // While the lightbox covers the page, instantly keep the background
+        // scrolled to the current photo — invisible to the user
         const syncScroll = () => {
           const el = document.querySelector<HTMLElement>(
             `[data-pswp-idx="${pswp.currIndex}"]`
@@ -137,7 +142,10 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
 
         pswp.on('change', syncScroll)
 
+        let closedByBack = false
+
         const onPop = () => {
+          closedByBack = true
           pswp.close()
           window.removeEventListener('popstate', onPop)
         }
@@ -145,9 +153,13 @@ export function GalleryLightbox({ images }: GalleryLightboxProps) {
 
         pswp.on('close', () => {
           window.removeEventListener('popstate', onPop)
-          if (history.state?.pswp) {
+          if (!closedByBack && history.state?.pswp) {
             history.back()
           }
+        })
+
+        pswp.on('destroy', () => {
+          history.scrollRestoration = prevScrollRestoration
         })
       }}
     >
