@@ -116,7 +116,7 @@ export default async function GalleryPage({
           {/* Gallery */}
           <section
             aria-label={t(`nav.${cat}`)}
-            className="px-8 md:px-16 lg:px-24"
+            className="md:px-16 lg:px-24"
           >
             <GalleryLightbox images={images} />
           </section>

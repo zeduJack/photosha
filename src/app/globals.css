@@ -84,6 +84,23 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Gallery ───────────────────────────────────────────────── */
 
+/* No horizontal overflow site-wide */
+html, body { overflow-x: hidden; }
+
+/* Hide all PhotoSwipe UI — clean lightbox, swipe-only */
+.pswp__button--close,
+.pswp__button--zoom,
+.pswp__button--arrow--prev,
+.pswp__button--arrow--next,
+.pswp__counter,
+.pswp__top-bar { display: none !important; }
+
+/* Gallery grid: 1 col mobile, 2 col desktop */
+.gallery-grid { grid-template-columns: 1fr; gap: 0; }
+@media (min-width: 768px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+
 /* Hide horizontal scrollbar on mobile nav */
 .scrollbar-none {
   scrollbar-width: none;
