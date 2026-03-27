@@ -95,17 +95,15 @@ html, body { overflow-x: hidden; }
 .pswp__counter,
 .pswp__top-bar { display: none !important; }
 
-/* Gallery + category grids: 1 col mobile, 2 col desktop */
-.gallery-grid,
-.category-grid {
+/* Gallery grid: 1 col mobile, 2 col desktop */
+.gallery-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
   align-items: start;
 }
 @media (min-width: 768px) {
-  .gallery-grid,
-  .category-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
 
 /* Hide horizontal scrollbar on mobile nav */
