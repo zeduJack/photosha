@@ -6,6 +6,7 @@ import { Link, usePathname } from '@/i18n/navigation'
 import { LanguageSwitcher } from './language-switcher'
 
 const NAV_LINKS = [
+  { key: 'home',      href: '/'          },
   { key: 'portrait',  href: '/portrait'  },
   { key: 'wedding',   href: '/wedding'   },
   { key: 'event',     href: '/event'     },
@@ -49,7 +50,8 @@ export function NavBar({ variant = 'page' }: NavBarProps) {
 
   const textClass = isHero ? 'text-white' : 'text-[var(--color-text-primary)]'
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/')
 
   const linkClass = (href: string) => {
     const base = `font-body text-[var(--font-size-label)] font-medium tracking-[var(--letter-spacing-wider)] uppercase transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current`
